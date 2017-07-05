@@ -1,18 +1,15 @@
 from datetime import datetime
-counter = 100000
-call_list = []
 
 class Call(object):   
+    counter = 10000
     def __init__(self, caller_name, caller_phone_no, call_reason, time = datetime.now().time()):
-        global counter
-        self.id = counter
-        counter += 1
+        self.id = Call.counter
+        Call.counter += 1
         self.caller_name = caller_name
         self.caller_phone_no = caller_phone_no
         self.time = time
         self.reason = call_reason
-        global call_list
-        call_list.append(self)
+        CallCenter.call_list.append(self)
     
     def display(self):
         info = self.__dict__
@@ -23,37 +20,34 @@ class Call(object):
 
 
 class CallCenter(object):
+    call_list = []
     def __init__(self):
-        global call_list
-        self.calls = call_list
-        self.queue_size = len(call_list)
+        self.calls = CallCenter.call_list
+        self.queue_size = len(CallCenter.call_list)
     def add(self, caller_name, caller_phone_no, call_reason, time = datetime.now().time()):
         Call(caller_name, caller_phone_no, call_reason, time)
         return self
     def remove(self, phone_number):
-        global call_list
         if not phone_number:
-            call_list.pop(0)
+            CallCenter.call_list.pop(0)
         else:
             i = 0
-            for call in call_list:
+            for call in CallCenter.call_list:
                 if call.caller_phone_no == phone_number:
-                    call_list.pop(i)
+                    CallCenter.call_list.pop(i)
                 i += 1
         return self
     def info(self):
-        global call_list
-        for call in call_list:
+        for call in CallCenter.call_list:
             print call.id, "--- Caller Name:", call.caller_name, "--- Caller Phone Number:", call.caller_phone_no
         print "QUEUE LENGTH =", self.queue_size
         return self
     def time_order(self):
-        global call_list
         times = []
-        for call in call_list:
+        for call in CallCenter.call_list:
             times.append(call.time)
-        call_list = [x for i, x in sorted(zip(times, call_list))]
-        return call_list
+        CallCenter.call_list = [x for i, x in sorted(zip(times, CallCenter.call_list))]
+        return CallCenter.call_list
 
 
 # Testing
@@ -85,9 +79,9 @@ center.info()
 # Get the call list to be in the wrong time order
 print "-" * 50 
 print "Swapped the first and last call in the call list so the earliest call is now last"
-temp = call_list[0]
-call_list[0] = call_list[len(call_list)-1]
-call_list[len(call_list)-1] = temp
+temp = CallCenter.call_list[0]
+CallCenter.call_list[0] = CallCenter.call_list[len(CallCenter.call_list)-1]
+CallCenter.call_list[len(CallCenter.call_list)-1] = temp
 print "-" * 50 
 center.info()
 
